@@ -16,17 +16,7 @@ public class GameManager : MonoBehaviour
         RESULT,      // 結果
     }
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    public static bool isCleared = false;
 
     /// <summary>
     /// クリックしたら、シーン遷移
@@ -34,8 +24,11 @@ public class GameManager : MonoBehaviour
     public void OnClickNextScene()
     {
         int buildIndex = SceneManager.GetActiveScene().buildIndex;
-        if(buildIndex == (int)SCENE_STATE.RESULT)
+        if (buildIndex == (int)SCENE_STATE.RESULT)
+        {
+            GameManager.isCleared = false;
             SceneManager.LoadSceneAsync(0);
+        }
         else
             SceneManager.LoadSceneAsync(buildIndex + 1);
     }
