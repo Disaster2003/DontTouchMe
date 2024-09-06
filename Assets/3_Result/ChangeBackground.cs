@@ -11,8 +11,8 @@ public class ChangeBackground : MonoBehaviour
     void Start()
     {
         if (GameManager.isCleared)
-            GetComponent<Image>().sprite = background[0];
+            GetComponent<SpriteRenderer>().sprite = background[0];
         else
-            GetComponent<Image>().sprite = background[1];
+            GetComponent<SpriteRenderer>().sprite = background[1];
     }
 }
