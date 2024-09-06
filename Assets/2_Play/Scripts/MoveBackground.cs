@@ -7,6 +7,7 @@ public class MoveBackground : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        // ‰Šú”z’u
         transform.position = Vector3.zero;
     }
 

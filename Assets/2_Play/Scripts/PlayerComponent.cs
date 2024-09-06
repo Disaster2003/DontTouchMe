@@ -10,14 +10,15 @@ public class PlayerComponent : MonoBehaviour
     [SerializeField] float hp;
     private float hpMax;
 
+    SpriteRenderer spriteRenderer;
     /// <summary>
     /// プレイヤーの状態
     /// </summary>
     public enum STATE_PLAYER
     {
-        RUN,
-        ATTACK,
-        DAMAGE,
+        RUN,    // 走行
+        ATTACK, // 攻撃
+        DAMAGE, // ダメージ
     }
     public STATE_PLAYER state_player;
     [SerializeField] Sprite[] run;
@@ -26,12 +27,12 @@ public class PlayerComponent : MonoBehaviour
     /// </summary>
     private enum STATE_PLAYER_ATTACK
     {
-        PUNCH,
-        KICK,
-        HEADBUTT,
-        ICE1,
-        ICE2,
-        ROTATION,
+        PUNCH,      // パンチ
+        KICK,       // キック
+        HEADBUTT,   // 頭突き
+        ICE1,       // 氷攻撃
+        ICE2,       // 氷攻撃
+        ROTATION,   // 回転
     }
     private STATE_PLAYER_ATTACK state_player_attack;
     [SerializeField] Sprite[] punch;
@@ -44,15 +45,26 @@ public class PlayerComponent : MonoBehaviour
     [SerializeField] Sprite[] damage;
     private float timer;
 
+    public float invincible;
+
     // Start is called before the first frame update
     void Start()
     {
-        instance = this;
+        // Singleton
+        if (instance == null)
+            instance = this;
+
+        // 体力の最大値を設定
         hpMax = hp;
+
+        // プレイヤーの状態の初期化
+        spriteRenderer = GetComponent<SpriteRenderer>();
         state_player = STATE_PLAYER.RUN;
         state_player_attack = STATE_PLAYER_ATTACK.PUNCH;
         attackSpriteArray = new Sprite[]{ punch[0], kick[0], headbutt[0], ice1[0], ice2[0], attack_rotation[0] };
         timer = 0.1f;
+
+        invincible = 0;
     }
 
     // Update is called once per frame
@@ -73,9 +85,9 @@ public class PlayerComponent : MonoBehaviour
                 if (Input.GetKeyDown(KeyCode.Space))
                 {
                     state_player = STATE_PLAYER.ATTACK;
-                    int tmp = Random.Range(0, System.Enum.GetValues(typeof(STATE_PLAYER_ATTACK)).Length);
+                    int tmp = Random.Range(0, attackSpriteArray.Length);
                     state_player_attack = (STATE_PLAYER_ATTACK)tmp;
-                    GetComponent<SpriteRenderer>().sprite = attackSpriteArray[tmp];
+                    spriteRenderer.sprite = attackSpriteArray[tmp];
                 }
 
                 PlayerAnimation(run);
@@ -108,7 +120,8 @@ public class PlayerComponent : MonoBehaviour
                 break;
         }
         // 時間計測
-        timer -= Time.deltaTime;
+        timer += -Time.deltaTime;
+        invincible += -Time.deltaTime;
     }
 
     /// <summary>
@@ -130,20 +143,36 @@ public class PlayerComponent : MonoBehaviour
         {
             timer = 0.1f;
             for (int i = 0; i < spriteArray.Length; i++)
-                if (GetComponent<SpriteRenderer>().sprite == spriteArray[i])
+                if (spriteRenderer.sprite == spriteArray[i])
                     if (i == spriteArray.Length - 1)
                     {
                         // 走行状態の始めに戻す
                         state_player = STATE_PLAYER.RUN;
-                        GetComponent<SpriteRenderer>().sprite = run[0];
+                        spriteRenderer.sprite = run[0];
                         break;
                     }
                     else
                     {
                         // 次の画像に切り替える
-                        GetComponent<SpriteRenderer>().sprite = spriteArray[i + 1];
+                        spriteRenderer.sprite = spriteArray[i + 1];
                         break;
                     }
         }
+
+        // 半透明
+        if (0 < invincible)
+            spriteRenderer.color = new Color(1, 1, 1, 0.5f);
+        else
+            spriteRenderer.color = new Color(1, 1, 1, 1);
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.name.Contains("Enemy"))
+            if (invincible <= 0)
+            {
+                invincible = 1.0f;
+                hp--;
+            }
     }
 }

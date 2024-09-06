@@ -8,7 +8,7 @@ public class GameManager : MonoBehaviour
     /// <summary>
     /// シーンの状態
     /// </summary>
-    enum SCENE_STATE
+    enum STATE_SCENE
     {
         TITLE = 0,   // タイトル
         EXPLAIN = 1, // 説明
@@ -24,7 +24,7 @@ public class GameManager : MonoBehaviour
     public void OnClickNextScene()
     {
         int buildIndex = SceneManager.GetActiveScene().buildIndex;
-        if (buildIndex == (int)SCENE_STATE.RESULT)
+        if (buildIndex == (int)STATE_SCENE.RESULT)
         {
             GameManager.isCleared = false;
             SceneManager.LoadSceneAsync(0);
