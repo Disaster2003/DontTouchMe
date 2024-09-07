@@ -45,7 +45,8 @@ public class PlayerComponent : MonoBehaviour
     [SerializeField] Sprite[] damage;
     private float timer;
 
-    public float invincible;
+    private float intervalAttack;
+    private float intervalInvincible;
 
     // Start is called before the first frame update
     void Start()
@@ -64,7 +65,8 @@ public class PlayerComponent : MonoBehaviour
         attackSpriteArray = new Sprite[]{ punch[0], kick[0], headbutt[0], ice1[0], ice2[0], attack_rotation[0] };
         timer = 0.1f;
 
-        invincible = 0;
+        intervalInvincible = 0;
+        intervalAttack = 0;
     }
 
     // Update is called once per frame
@@ -81,14 +83,15 @@ public class PlayerComponent : MonoBehaviour
         switch (state_player)
         {
             case STATE_PLAYER.RUN:
-                // çUåÇë‘ê®
-                if (Input.GetKeyDown(KeyCode.Space))
-                {
-                    state_player = STATE_PLAYER.ATTACK;
-                    int tmp = Random.Range(0, attackSpriteArray.Length);
-                    state_player_attack = (STATE_PLAYER_ATTACK)tmp;
-                    spriteRenderer.sprite = attackSpriteArray[tmp];
-                }
+                if (intervalAttack <= 0)
+                    // çUåÇë‘ê®
+                    if (Input.GetKeyDown(KeyCode.Space))
+                    {
+                        state_player = STATE_PLAYER.ATTACK;
+                        int tmp = Random.Range(0, attackSpriteArray.Length);
+                        state_player_attack = (STATE_PLAYER_ATTACK)tmp;
+                        spriteRenderer.sprite = attackSpriteArray[tmp];
+                    }
 
                 PlayerAnimation(run);
                 break;
@@ -121,7 +124,8 @@ public class PlayerComponent : MonoBehaviour
         }
         // éûä‘åvë™
         timer += -Time.deltaTime;
-        invincible += -Time.deltaTime;
+        intervalInvincible += -Time.deltaTime;
+        intervalAttack += -Time.deltaTime;
     }
 
     /// <summary>
@@ -147,6 +151,8 @@ public class PlayerComponent : MonoBehaviour
                     if (i == spriteArray.Length - 1)
                     {
                         // ëñçsèÛë‘ÇÃénÇﬂÇ…ñﬂÇ∑
+                        if (state_player == STATE_PLAYER.ATTACK)
+                            intervalAttack = 1.0f;
                         state_player = STATE_PLAYER.RUN;
                         spriteRenderer.sprite = run[0];
                         break;
@@ -160,7 +166,7 @@ public class PlayerComponent : MonoBehaviour
         }
 
         // îºìßñæ
-        if (0 < invincible)
+        if (0 < intervalInvincible)
             spriteRenderer.color = new Color(1, 1, 1, 0.5f);
         else
             spriteRenderer.color = new Color(1, 1, 1, 1);
@@ -169,9 +175,11 @@ public class PlayerComponent : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.name.Contains("Enemy"))
-            if (invincible <= 0)
+            if (intervalInvincible <= 0)
             {
-                invincible = 1.0f;
+                intervalInvincible = 1.0f;
+                state_player = STATE_PLAYER.DAMAGE;
+                spriteRenderer.sprite = damage[0];
                 hp--;
             }
     }
