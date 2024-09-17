@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class MoveBackground : MonoBehaviour
 {
+    private const float POSITION_END = -17.25f;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -18,7 +20,9 @@ public class MoveBackground : MonoBehaviour
         transform.position += new Vector3(5 * -Time.deltaTime, 0, 0);
 
         // ‰æ‘œ‚Ì“¯‚¶•”•ª‚É–ß‚µA‚¸‚Á‚Æ‘±‚¢‚Ä‚¢‚é‚æ‚¤‚ÉöŠo
-        if (transform.position.x <= -17.25f)
+        if (transform.position.x <= POSITION_END)
+        {
             transform.position = Vector3.zero;
+        }
     }
 }

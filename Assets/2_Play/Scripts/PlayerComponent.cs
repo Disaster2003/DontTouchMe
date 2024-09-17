@@ -51,9 +51,53 @@ public class PlayerComponent : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        // nullチェック
+        if(hp == 0)
+        {
+            Debug.Log("体力が未設定です");
+            return;
+        }
+        if(punch == null)
+        {
+            Debug.Log("プレイヤーのパンチ画像が未設定です");
+            return;
+        }
+        if(kick == null)
+        {
+            Debug.Log("プレイヤーのキック画像が未設定です");
+            return;
+        }
+        if(headbutt == null)
+        {
+            Debug.Log("プレイヤーの頭突き画像が未設定です");
+            return;
+        }
+        if(ice1 == null)
+        {
+            Debug.Log("プレイヤーの氷攻撃画像1が未設定です");
+            return;
+        }
+        if(ice2 == null)
+        {
+            Debug.Log("プレイヤーの氷攻撃画像2が未設定です");
+            return;
+        }
+        if(attack_rotation == null)
+        {
+            Debug.Log("プレイヤーの回転攻撃画像が未設定です");
+            return;
+        }
+        if(run == null)
+        {
+            Debug.Log("プレイヤーのダメージ画像が未設定です");
+            return;
+        }
+
         // Singleton
         if (instance == null)
+        {
             instance = this;
+        }
 
         // 体力の最大値を設定
         hpMax = hp;
@@ -147,34 +191,55 @@ public class PlayerComponent : MonoBehaviour
         {
             timer = 0.1f;
             for (int i = 0; i < spriteArray.Length; i++)
+            {
                 if (spriteRenderer.sprite == spriteArray[i])
+                {
+                    // 走行状態の始めに戻す
                     if (i == spriteArray.Length - 1)
                     {
-                        // 走行状態の始めに戻す
+                        // 攻撃のインターバル
                         if (state_player == STATE_PLAYER.ATTACK)
+                        {
                             intervalAttack = 1.0f;
+                        }
                         state_player = STATE_PLAYER.RUN;
                         spriteRenderer.sprite = run[0];
                         break;
                     }
+                    // 次の画像に切り替える
                     else
                     {
-                        // 次の画像に切り替える
                         spriteRenderer.sprite = spriteArray[i + 1];
                         break;
                     }
+                }
+            }
         }
 
         // 半透明
         if (0 < intervalInvincible)
+        {
             spriteRenderer.color = new Color(1, 1, 1, 0.5f);
+        }
+        // 不透明
         else
-            spriteRenderer.color = new Color(1, 1, 1, 1);
+        {
+            spriteRenderer.color = Color.white;
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
+        // nullチェック
+        if(collision == null)
+        {
+            Debug.Log("敵が存在しません");
+            return;
+        }
+
         if (collision.name.Contains("Enemy"))
+        {
+            // ダメージ
             if (intervalInvincible <= 0)
             {
                 intervalInvincible = 1.0f;
@@ -182,5 +247,6 @@ public class PlayerComponent : MonoBehaviour
                 spriteRenderer.sprite = damage[0];
                 hp--;
             }
+        }
     }
 }

@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static PlayerComponent;
 
 public class EnemyComponent : MonoBehaviour
 {
@@ -29,6 +28,18 @@ public class EnemyComponent : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        // nullチェック
+        if(enemy == null)
+        {
+            Debug.Log("敵画像が未設定です");
+            return;
+        }
+        if(breakHeart == null)
+        {
+            Debug.Log("ハートブレイク画像が未設定です");
+            return;
+        }
+
         // 初期配置
         transform.position = new Vector3(10, -4, 0);
 
@@ -85,10 +96,14 @@ public class EnemyComponent : MonoBehaviour
             case STATE_ENEMY.INSTANT:
                 // 画面端まで動く
                 if (timer <= 0)
+                {
                     transform.position += new Vector3(5 * -Time.deltaTime, 0, 0);
+                }
                 // 時間計測
                 else if (transform.position.x == -5)
+                {
                     timer += -Time.deltaTime;
+                }
                 // プレイヤーの目の前へ
                 else if (transform.position.x <= 8)
                 {
@@ -97,7 +112,9 @@ public class EnemyComponent : MonoBehaviour
                 }
                 // 少し顔を出させる
                 else
+                {
                     transform.position += new Vector3(3 * -Time.deltaTime, 0, 0);
+                }
                 break;
             case STATE_ENEMY.DEAD:
                 // アニメーション
@@ -105,27 +122,34 @@ public class EnemyComponent : MonoBehaviour
                 {
                     timer = 0.1f;
                     for (int i = 0; i < breakHeart.Length; i++)
+                    {
                         if (GetComponent<SpriteRenderer>().sprite == breakHeart[i])
+                        {
+                            // 自身を破壊
                             if (i == breakHeart.Length - 1)
                             {
-                                // 自身を破壊
                                 Destroy(gameObject);
                                 break;
                             }
+                            // 次の画像に切り替える
                             else
                             {
-                                // 次の画像に切り替える
                                 GetComponent<SpriteRenderer>().sprite = breakHeart[i + 1];
                                 break;
                             }
+                        }
+                    }
                 }
+                // アニメーションのインターバル
                 timer += -Time.deltaTime;
                 break;
         }
 
         // 自身の破壊
-        if(transform.position.x <= -10)
+        if (transform.position.x <= -10)
+        {
             Destroy(gameObject);
+        }
     }
 
     /// <summary>
@@ -135,11 +159,15 @@ public class EnemyComponent : MonoBehaviour
     {
         // ハートの演出の破壊
         if (transform.childCount != 0)
+        {
             Destroy(transform.GetChild(0).gameObject);
+        }
 
         // 物理演算の破壊
         if (GetComponent<Rigidbody2D>())
+        {
             Destroy(GetComponent<Rigidbody2D>());
+        }
 
         // 死へ
         state_enemy = STATE_ENEMY.DEAD;

@@ -16,6 +16,13 @@ public class Spawn : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        // nullチェック
+        if(enemy == null)
+        {
+            Debug.Log("敵のオブジェクトが未設定です");
+            return;
+        }
+
         // 敵のスポーン
         if(timer <= 0)
         {

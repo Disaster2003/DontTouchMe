@@ -30,6 +30,8 @@ public class GameManager : MonoBehaviour
             SceneManager.LoadSceneAsync(0);
         }
         else
+        {
             SceneManager.LoadSceneAsync(buildIndex + 1);
+        }
     }
 }
